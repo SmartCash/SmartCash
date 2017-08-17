@@ -242,6 +242,8 @@ static const CRPCCommand vRPCCommands[] =
     { "verifymessage",          &verifymessage,          true,     false,      false },
     { "listaccounts",           &listaccounts,           false,     false,      true },
     { "settxfee",               &settxfee,               false,     false,      true },
+	{ "getblocktemplate",       &getblocktemplate,       true,      false,      false },
+	{ "submitblock",            &submitblock,            false,     false,      false },
     { "setmininput",            &setmininput,            false,     false,      false },
     { "listsinceblock",         &listsinceblock,         false,     false,      true },
     { "dumpprivkey",            &dumpprivkey,            true,      false,      true },

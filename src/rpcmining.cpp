@@ -63,3 +63,192 @@ Value getnetworkhashps(const Array& params, bool fHelp)
 
     return GetNetworkHashPS(params.size() > 0 ? params[0].get_int() : 120, params.size() > 1 ? params[1].get_int() : -1);
 }
+
+Value getblocktemplate(const Array& params, bool fHelp)
+{
+	if (fHelp || params.size() > 1)
+		throw runtime_error(
+			"getblocktemplate [params]\n"
+			"Returns data needed to construct a block to work on:\n"
+			"  \"version\" : block version\n"
+			"  \"previousblockhash\" : hash of current highest block\n"
+			"  \"transactions\" : contents of non-coinbase transactions that should be included in the next block\n"
+			"  \"coinbaseaux\" : data that should be included in coinbase\n"
+			"  \"coinbasevalue\" : maximum allowable input to coinbase transaction, including the generation award and transaction fees\n"
+			"  \"target\" : hash target\n"
+			"  \"mintime\" : minimum timestamp appropriate for next block\n"
+			"  \"curtime\" : current timestamp\n"
+			"  \"mutable\" : list of ways the block template may be changed\n"
+			"  \"noncerange\" : range of valid nonces\n"
+			"  \"sigoplimit\" : limit of sigops in blocks\n"
+			"  \"sizelimit\" : limit of block size\n"
+			"  \"bits\" : compressed target of next block\n"
+			"  \"height\" : height of the next block\n"
+			"See https://en.bitcoin.it/wiki/BIP_0022 for full specification.");
+
+	std::string strMode = "template";
+	if (params.size() > 0)
+	{
+		const Object& oparam = params[0].get_obj();
+		const Value& modeval = find_value(oparam, "mode");
+		if (modeval.type() == str_type)
+			strMode = modeval.get_str();
+		else if (modeval.type() == null_type)
+		{
+			/* Do nothing */
+		}
+		else
+			throw JSONRPCError(RPC_INVALID_PARAMETER, "Invalid mode");
+	}
+
+	if (strMode != "template")
+		throw JSONRPCError(RPC_INVALID_PARAMETER, "Invalid mode");
+
+	if (vNodes.empty())
+		throw JSONRPCError(RPC_CLIENT_NOT_CONNECTED, "SmartCash is not connected!");
+
+	if (IsInitialBlockDownload())
+		throw JSONRPCError(RPC_CLIENT_IN_INITIAL_DOWNLOAD, "SmartCash is downloading blocks...");
+
+	// Update block
+	static unsigned int nTransactionsUpdatedLast;
+	static CBlockIndex* pindexPrev;
+	static int64 nStart;
+	static CBlockTemplate* pblocktemplate;
+	if (pindexPrev != pindexBest ||
+		(nTransactionsUpdated != nTransactionsUpdatedLast && GetTime() - nStart > 5))
+	{
+		// Clear pindexPrev so future calls make a new block, despite any failures from here on
+		pindexPrev = NULL;
+
+		// Store the pindexBest used before CreateNewBlock, to avoid races
+		nTransactionsUpdatedLast = nTransactionsUpdated;
+		CBlockIndex* pindexPrevNew = pindexBest;
+		nStart = GetTime();
+
+		// Create new block
+		if (pblocktemplate)
+		{
+			delete pblocktemplate;
+			pblocktemplate = NULL;
+		}
+		CScript scriptDummy = CScript() << OP_TRUE;
+		pblocktemplate = CreateNewBlock(scriptDummy);
+		if (!pblocktemplate)
+			throw JSONRPCError(RPC_OUT_OF_MEMORY, "Out of memory");
+
+		// Need to update only after we know CreateNewBlock succeeded
+		pindexPrev = pindexPrevNew;
+	}
+	CBlock* pblock = &pblocktemplate->block; // pointer for convenience
+
+											 // Update nTime
+	pblock->UpdateTime(pindexPrev);
+	pblock->nNonce = 0;
+
+	Array transactions;
+	map<uint256, int64_t> setTxIndex;
+	int i = 0;
+	unsigned int COUNT_SPEND_ZC_TX = 0;
+	unsigned int MAX_SPEND_ZC_TX_PER_BLOCK = 1;
+
+	BOOST_FOREACH(CTransaction& tx, pblock->vtx)
+	{
+		uint256 txHash = tx.GetHash();
+		setTxIndex[txHash] = i++;
+
+		if (tx.IsCoinBase())
+			continue;
+
+		// https://github.com/zcoinofficial/smartcash/pull/26
+		// make order independence
+		// and easy to read for other people
+		if (tx.IsZerocoinSpend()) {
+			if (COUNT_SPEND_ZC_TX >= MAX_SPEND_ZC_TX_PER_BLOCK) {
+				continue;
+			}
+
+			COUNT_SPEND_ZC_TX++;
+		}
+
+		Object entry;
+
+		CDataStream ssTx(SER_NETWORK, PROTOCOL_VERSION);
+		ssTx << tx;
+		entry.push_back(Pair("data", HexStr(ssTx.begin(), ssTx.end())));
+
+		entry.push_back(Pair("hash", txHash.GetHex()));
+
+		Array deps;
+		BOOST_FOREACH(const CTxIn &in, tx.vin)
+		{
+			if (setTxIndex.count(in.prevout.hash))
+				deps.push_back(setTxIndex[in.prevout.hash]);
+		}
+		entry.push_back(Pair("depends", deps));
+
+		int index_in_template = i - 1;
+		entry.push_back(Pair("fee", pblocktemplate->vTxFees[index_in_template]));
+		entry.push_back(Pair("sigops", pblocktemplate->vTxSigOps[index_in_template]));
+
+		transactions.push_back(entry);
+	}
+
+	Object aux;
+	aux.push_back(Pair("flags", HexStr(COINBASE_FLAGS.begin(), COINBASE_FLAGS.end())));
+
+	uint256 hashTarget = CBigNum().SetCompact(pblock->nBits).getuint256();
+
+	static Array aMutable;
+	if (aMutable.empty())
+	{
+		aMutable.push_back("time");
+		aMutable.push_back("transactions");
+		aMutable.push_back("prevblock");
+	}
+
+	Object result;
+	result.push_back(Pair("version", pblock->nVersion));
+	result.push_back(Pair("previousblockhash", pblock->hashPrevBlock.GetHex()));
+	result.push_back(Pair("transactions", transactions));
+	result.push_back(Pair("coinbaseaux", aux));
+	result.push_back(Pair("coinbasevalue", (int64_t)pblock->vtx[0].vout[0].nValue));
+	result.push_back(Pair("target", hashTarget.GetHex()));
+	result.push_back(Pair("mintime", (int64_t)pindexPrev->GetMedianTimePast() + 1));
+	result.push_back(Pair("mutable", aMutable));
+	result.push_back(Pair("noncerange", "00000000ffffffff"));
+	result.push_back(Pair("sigoplimit", (int64_t)MAX_BLOCK_SIGOPS));
+	result.push_back(Pair("sizelimit", (int64_t)MAX_BLOCK_SIZE));
+	result.push_back(Pair("curtime", (int64_t)pblock->nTime));
+	result.push_back(Pair("bits", HexBits(pblock->nBits)));
+	result.push_back(Pair("height", (int64_t)(pindexPrev->nHeight + 1)));
+
+	return result;
+}
+
+Value submitblock(const Array& params, bool fHelp)
+{
+	if (fHelp || params.size() < 1 || params.size() > 2)
+		throw runtime_error(
+			"submitblock <hex data> [optional-params-obj]\n"
+			"[optional-params-obj] parameter is currently ignored.\n"
+			"Attempts to submit new block to network.\n"
+			"See https://en.bitcoin.it/wiki/BIP_0022 for full specification.");
+
+	vector<unsigned char> blockData(ParseHex(params[0].get_str()));
+	CDataStream ssBlock(blockData, SER_NETWORK, PROTOCOL_VERSION);
+	CBlock pblock;
+	try {
+		ssBlock >> pblock;
+	}
+	catch (std::exception &e) {
+		throw JSONRPCError(RPC_DESERIALIZATION_ERROR, "Block decode failed");
+	}
+
+	CValidationState state;
+	bool fAccepted = ProcessBlock(state, NULL, &pblock);
+	if (!fAccepted)
+		return "rejected"; // TODO: report validation state
+
+	return Value::null;
+}
