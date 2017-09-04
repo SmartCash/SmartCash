@@ -2232,7 +2232,7 @@ unsigned int static BorisRidiculouslyNamedDifficultyFunction(const CBlockIndex* 
         uint32_t     nPastBlocks               = 0;
         int32_t      nActualSeconds            = 0;
         int32_t      nTargetSeconds		       = 0;
-        fixed        nBlockTimeRatio       = 1;
+        fixed        nBlockTimeRatio	       = 1;
         CBigNum      bnPastTargetAverage;
         CBigNum      bnPastTargetAveragePrev;
         
@@ -2243,8 +2243,8 @@ unsigned int static BorisRidiculouslyNamedDifficultyFunction(const CBlockIndex* 
         
 
         for (unsigned int i = 1; BlockReading && BlockReading->nHeight > 0; i++)
-		{
-				
+    	{
+             
 		        if (PastBlocksMax > 0 && i > PastBlocksMax) { break; }
                 nPastBlocks++;
                 
@@ -2259,7 +2259,6 @@ unsigned int static BorisRidiculouslyNamedDifficultyFunction(const CBlockIndex* 
                 if (nActualSeconds < 1) { nActualSeconds = 1; }
                 
                 if (nActualSeconds != 0 && nTargetSeconds != 0) 
-                {
 					nBlockTimeRatio= double(nTargetSeconds) / nActualSeconds;
                 }
             
@@ -2282,11 +2281,11 @@ unsigned int static BorisRidiculouslyNamedDifficultyFunction(const CBlockIndex* 
     
     if (nActualSeconds != 0 && nTargetSeconds != 0) 
     {
-		
-		if ( nActualSeconds > 3 * nTargetSeconds ) { nActualSeconds = 3 * nTargetSeconds; } // Maximal difficulty decrease of /3 from constrained past average         
-		if ( nActualSeconds < nTargetSeconds / 3 ) { nActualSeconds = nTargetSeconds / 3; } // Maximal difficulty increase of x3 from constrained past average
+       
+    	if ( nActualSeconds > 3 * nTargetSeconds ) { nActualSeconds = 3 * nTargetSeconds; } // Maximal difficulty decrease of /3 from constrained past average         
+    	if ( nActualSeconds < nTargetSeconds / 3 ) { nActualSeconds = nTargetSeconds / 3; } // Maximal difficulty increase of x3 from constrained past average
         
-		bnNew *= nActualSeconds;
+    	bnNew *= nActualSeconds;
         bnNew /= nTargetSeconds;
     }
            
@@ -5731,37 +5730,37 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
 */
     // To SmartHive Teams, SmartHive Budget, and SmartDeposits
     if ((pindexBest->nHeight+1 > 0) && (pindexBest->nHeight+1 < 717499999)) {
-    // Take out amounts for budgets.
-    txNew.vout[0].nValue = -((int64)(0.95 * (GetBlockValue(pindexBest->nHeight+1, 0, pindexBest->nTime))));
+	// Take out amounts for budgets.
+	txNew.vout[0].nValue =-((int64)(0.95 * (GetBlockValue(pindexBest->nHeight+1, 0, pindexBest->nTime))));
 
-        CScript FOUNDER_1_SCRIPT;
-        CScript FOUNDER_2_SCRIPT;
-        CScript FOUNDER_3_SCRIPT;
-        CScript FOUNDER_4_SCRIPT;
-        CScript FOUNDER_5_SCRIPT;
+         CScript FOUNDER_1_SCRIPT;
+         CScript FOUNDER_2_SCRIPT;
+         CScript FOUNDER_3_SCRIPT;
+         CScript FOUNDER_4_SCRIPT;
+         CScript FOUNDER_5_SCRIPT;
 
-        if (!fTestNet && (GetAdjustedTime() > nStartRewardTime)) {
-            FOUNDER_1_SCRIPT.SetDestination(CBitcoinAddress("Siim7T5zMH3he8xxtQzhmHs4CQSuMrCV1M").Get());
-            FOUNDER_2_SCRIPT.SetDestination(CBitcoinAddress("SW2FbVaBhU1Www855V37auQzGQd8fuLR9x").Get());
-            FOUNDER_3_SCRIPT.SetDestination(CBitcoinAddress("SPusYr5tUdUyRXevJg7pnCc9Sm4HEzaYZF").Get());
-            FOUNDER_4_SCRIPT.SetDestination(CBitcoinAddress("SU5bKb35xUV8aHG5dNarWHB3HBVjcCRjYo").Get());
-            FOUNDER_5_SCRIPT.SetDestination(CBitcoinAddress("SXun9XDHLdBhG4Yd1ueZfLfRpC9kZgwT1b").Get());
-        }else if(!fTestNet && (GetAdjustedTime() <= nStartRewardTime)) {
-            throw std::runtime_error("CreateNewBlock() : Create new block too early");
-        }else{
-            FOUNDER_1_SCRIPT.SetDestination(CBitcoinAddress("TBizCRSozKpCbheftmzs75fZnc7h6HocJ3").Get());
-            FOUNDER_2_SCRIPT.SetDestination(CBitcoinAddress("THc8faox1kKZ3aegLdU4cwCJwgehLHSe9M").Get());
-            FOUNDER_3_SCRIPT.SetDestination(CBitcoinAddress("TK7CPJ2BS2UxAc7KBbUYySCBczww97Qr7p").Get());
-            FOUNDER_4_SCRIPT.SetDestination(CBitcoinAddress("TUPAY3ziYY7znMLxRJJNuvfuFWS1snrjiM").Get());
-            FOUNDER_5_SCRIPT.SetDestination(CBitcoinAddress("TMtxkvmAMyL5siHX1n3zKAvAKnev8if8KA").Get());
-        }
+         if(!fTestNet && (GetAdjustedTime() > nStartRewardTime)){
+                FOUNDER_1_SCRIPT.SetDestination(CBitcoinAddress("Siim7T5zMH3he8xxtQzhmHs4CQSuMrCV1M").Get());
+                FOUNDER_2_SCRIPT.SetDestination(CBitcoinAddress("SW2FbVaBhU1Www855V37auQzGQd8fuLR9x").Get());
+                FOUNDER_3_SCRIPT.SetDestination(CBitcoinAddress("SPusYr5tUdUyRXevJg7pnCc9Sm4HEzaYZF").Get());
+                FOUNDER_4_SCRIPT.SetDestination(CBitcoinAddress("SU5bKb35xUV8aHG5dNarWHB3HBVjcCRjYo").Get());
+                FOUNDER_5_SCRIPT.SetDestination(CBitcoinAddress("SXun9XDHLdBhG4Yd1ueZfLfRpC9kZgwT1b").Get());
+         }else if(!fTestNet && (GetAdjustedTime() <= nStartRewardTime)){
+             throw std::runtime_error("CreateNewBlock() : Create new block too early");
+         }else{
+                FOUNDER_1_SCRIPT.SetDestination(CBitcoinAddress("TBizCRSozKpCbheftmzs75fZnc7h6HocJ3").Get());
+                FOUNDER_2_SCRIPT.SetDestination(CBitcoinAddress("THc8faox1kKZ3aegLdU4cwCJwgehLHSe9M").Get());
+                FOUNDER_3_SCRIPT.SetDestination(CBitcoinAddress("TK7CPJ2BS2UxAc7KBbUYySCBczww97Qr7p").Get());
+                FOUNDER_4_SCRIPT.SetDestination(CBitcoinAddress("TUPAY3ziYY7znMLxRJJNuvfuFWS1snrjiM").Get());
+                FOUNDER_5_SCRIPT.SetDestination(CBitcoinAddress("TMtxkvmAMyL5siHX1n3zKAvAKnev8if8KA").Get());
+         }
 
          // And pay the budgets
-         txNew.vout.push_back(CTxOut((int64)(0.08 * (GetBlockValue(pindexBest->nHeight + 1, 0, pindexBest->nTime))), CScript(FOUNDER_1_SCRIPT.begin(), FOUNDER_1_SCRIPT.end())));
-         txNew.vout.push_back(CTxOut((int64)(0.08 * (GetBlockValue(pindexBest->nHeight + 1, 0, pindexBest->nTime))), CScript(FOUNDER_2_SCRIPT.begin(), FOUNDER_2_SCRIPT.end())));
-         txNew.vout.push_back(CTxOut((int64)(0.08 * (GetBlockValue(pindexBest->nHeight + 1, 0, pindexBest->nTime))), CScript(FOUNDER_3_SCRIPT.begin(), FOUNDER_3_SCRIPT.end())));
-         txNew.vout.push_back(CTxOut((int64)(0.15 * (GetBlockValue(pindexBest->nHeight + 1, 0, pindexBest->nTime))), CScript(FOUNDER_4_SCRIPT.begin(), FOUNDER_4_SCRIPT.end())));
-         txNew.vout.push_back(CTxOut((int64)(0.56 * (GetBlockValue(pindexBest->nHeight + 1, 0, pindexBest->nTime))), CScript(FOUNDER_5_SCRIPT.begin(), FOUNDER_5_SCRIPT.end())));
+         txNew.vout.push_back(CTxOut((int64)(0.08 * (GetBlockValue(pindexBest->nHeight+1, 0, pindexBest->nTime))), CScript(FOUNDER_1_SCRIPT.begin(), FOUNDER_1_SCRIPT.end())));
+         txNew.vout.push_back(CTxOut((int64)(0.08 * (GetBlockValue(pindexBest->nHeight+1, 0, pindexBest->nTime))), CScript(FOUNDER_2_SCRIPT.begin(), FOUNDER_2_SCRIPT.end())));
+         txNew.vout.push_back(CTxOut((int64)(0.08 * (GetBlockValue(pindexBest->nHeight+1, 0, pindexBest->nTime))), CScript(FOUNDER_3_SCRIPT.begin(), FOUNDER_3_SCRIPT.end())));
+         txNew.vout.push_back(CTxOut((int64)(0.15 * (GetBlockValue(pindexBest->nHeight+1, 0, pindexBest->nTime))), CScript(FOUNDER_4_SCRIPT.begin(), FOUNDER_4_SCRIPT.end())));
+         txNew.vout.push_back(CTxOut((int64)(0.56 * (GetBlockValue(pindexBest->nHeight+1, 0, pindexBest->nTime))), CScript(FOUNDER_5_SCRIPT.begin(), FOUNDER_5_SCRIPT.end())));
     }
     // Add our coinbase tx as first transaction
     pblock->vtx.push_back(txNew);
@@ -6033,7 +6032,7 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
 
         CBlockIndex indexDummy(*pblock);
         indexDummy.pprev = pindexPrev;
-        indexDummy.nHeight = pindexPrev->nHeight+1;
+        indexDummy.nHeight = pindexPrev->nHeight + 1;
         CCoinsViewCache viewNew(*pcoinsTip, true);
         CValidationState state;
         if (!pblock->ConnectBlock(state, &indexDummy, viewNew, true))
@@ -6063,7 +6062,7 @@ void IncrementExtraNonce(CBlock* pblock, CBlockIndex* pindexPrev, unsigned int& 
         hashPrevBlock = pblock->hashPrevBlock;
     }
     ++nExtraNonce;
-    unsigned int nHeight = pindexPrev->nHeight + 1; // Height first in coinbase required for block.version=2
+    unsigned int nHeight = pindexPrev->nHeight+1; // Height first in coinbase required for block.version=2
     pblock->vtx[0].vin[0].scriptSig = (CScript() << nHeight << CBigNum(nExtraNonce)) + COINBASE_FLAGS;
     assert(pblock->vtx[0].vin[0].scriptSig.size() <= 100);
 
@@ -6161,7 +6160,7 @@ bool CheckWork(CBlock* pblock, CWallet& wallet, CReserveKey& reservekey)
         //// debug print
         printf("SmartCashMiner:\n");
         printf("proof-of-work found  \n  hash: %s  \ntarget: %s\n", hash.GetHex().c_str(), hashTarget.GetHex().c_str());
-    //    }
+//    }
     
     //// debug print    
     pblock->print();
@@ -6204,7 +6203,7 @@ CBlockHeader CBlockIndex::GetBlockHeader() const
         block.auxpow = diskblockindex.auxpow;
     }
 */
-    block.nVersion = nVersion;
+    block.nVersion       = nVersion;
     if (pprev)
     block.hashPrevBlock = pprev->GetBlockHash();
     block.hashMerkleRoot = hashMerkleRoot;
