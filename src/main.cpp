@@ -2182,10 +2182,10 @@ int64 static GetBlockValue(int nHeight, int64 nFees, unsigned int nTime)
         return 0 * COIN;
     // Maximum block reward is 5000 coins
     if (nHeight > 0 && nHeight <= 143499)
-	return 5000 * COIN + nFees;
+    return 5000 * COIN + nFees;
     // Block rewards taper off after block 143500
     if (nHeight > 143499 && nHeight <= 717499999)
-	return floor(0.5+((5000 * 143500)/(nHeight +1))/100)*100 * COIN + nFees;
+    return floor(0.5+((5000 * 143500)/(nHeight +1))/100)*100 * COIN + nFees;
     // Stop rewards when blocks size is less than 1.
     if (nHeight > 717499999)
         return nFees;
@@ -2231,8 +2231,8 @@ unsigned int static BorisRidiculouslyNamedDifficultyFunction(const CBlockIndex* 
         
         uint32_t     nPastBlocks               = 0;
         int32_t      nActualSeconds            = 0;
-        int32_t      nTargetSeconds    	       = 0;
-        fixed        nBlockTimeRatio	       = 1;
+        int32_t      nTargetSeconds               = 0;
+        fixed        nBlockTimeRatio           = 1;
         CBigNum      bnPastTargetAverage;
         CBigNum      bnPastTargetAveragePrev;
         
@@ -2243,9 +2243,9 @@ unsigned int static BorisRidiculouslyNamedDifficultyFunction(const CBlockIndex* 
         
 
         for (unsigned int i = 1; BlockReading && BlockReading->nHeight > 0; i++)
-    	{
-             	
-    	        if (PastBlocksMax > 0 && i > PastBlocksMax) { break; }
+        {
+                 
+                if (PastBlocksMax > 0 && i > PastBlocksMax) { break; }
                 nPastBlocks++;
                 
                 if (i == 1)        { bnPastTargetAverage.SetCompact(BlockReading->nBits); }
@@ -2260,7 +2260,7 @@ unsigned int static BorisRidiculouslyNamedDifficultyFunction(const CBlockIndex* 
                 
                 if (nActualSeconds != 0 && nTargetSeconds != 0) 
                 {
-                	nBlockTimeRatio= double(nTargetSeconds) / nActualSeconds;
+                    nBlockTimeRatio= double(nTargetSeconds) / nActualSeconds;
                 }
             
             
@@ -2282,11 +2282,11 @@ unsigned int static BorisRidiculouslyNamedDifficultyFunction(const CBlockIndex* 
     
     if (nActualSeconds != 0 && nTargetSeconds != 0) 
     {
-       	
-    	if ( nActualSeconds > 3 * nTargetSeconds ) { nActualSeconds = 3 * nTargetSeconds; } // Maximal difficulty decrease of /3 from constrained past average     	
-    	if ( nActualSeconds < nTargetSeconds / 3 ) { nActualSeconds = nTargetSeconds / 3; } // Maximal difficulty increase of x3 from constrained past average
+           
+        if ( nActualSeconds > 3 * nTargetSeconds ) { nActualSeconds = 3 * nTargetSeconds; } // Maximal difficulty decrease of /3 from constrained past average         
+        if ( nActualSeconds < nTargetSeconds / 3 ) { nActualSeconds = nTargetSeconds / 3; } // Maximal difficulty increase of x3 from constrained past average
         
-    	bnNew *= nActualSeconds;
+        bnNew *= nActualSeconds;
         bnNew /= nTargetSeconds;
     }
            
@@ -2324,7 +2324,7 @@ unsigned int static GetNextWorkRequired(const CBlockIndex* pindexLast, const CBl
         uint32_t                                PastBlocksMin                                = PastSecondsMin / BlocksTargetSpacing; // 36 blocks
         uint32_t                                PastBlocksMax                                = PastSecondsMax / BlocksTargetSpacing; // 1008 blocks
 
-  	if ((pindexLast->nHeight+1) % nInterval != 0) // Retarget every nInterval blocks
+      if ((pindexLast->nHeight+1) % nInterval != 0) // Retarget every nInterval blocks
     {
         return pindexLast->nBits;
     }
@@ -3772,7 +3772,7 @@ bool ProcessBlock(CValidationState &state, CNode* pfrom, CBlock* pblock, CDiskBl
 
 CMerkleBlock::CMerkleBlock(const CBlock& block, CBloomFilter& filter)
 {
-	header = block.GetBlockHeader();
+    header = block.GetBlockHeader();
 
     vector<bool> vMatch;
     vector<uint256> vHashes;
@@ -4212,7 +4212,7 @@ bool InitBlockIndex() {
 
         txNew.vin.resize(1);
         txNew.vout.resize(1);
-	txNew.vin[0].scriptSig = CScript() << bnProofOfWorkLimit.GetCompact() << CBigNum(4) << vector<unsigned char>((const unsigned char*)pszTimestamp, (const unsigned char*)pszTimestamp + strlen(pszTimestamp)) << extraNonce;
+    txNew.vin[0].scriptSig = CScript() << bnProofOfWorkLimit.GetCompact() << CBigNum(4) << vector<unsigned char>((const unsigned char*)pszTimestamp, (const unsigned char*)pszTimestamp + strlen(pszTimestamp)) << extraNonce;
         txNew.vout[0].nValue = 0 * COIN;
 
         txNew.vout[0].scriptPubKey = CScript();
@@ -4259,7 +4259,7 @@ bool InitBlockIndex() {
 
         while(true)
         {
-	    thash = block.GetHash();
+        thash = block.GetHash();
             if (thash <= hashTarget)
                 break;
             if ((block.nNonce & 0xFFF) == 0)
@@ -5615,62 +5615,62 @@ bool SendMessages(CNode* pto, bool fSendTrickle)
 
 int static FormatHashBlocks(void* pbuffer, unsigned int len)
 {
-	unsigned char* pdata = (unsigned char*)pbuffer;
-	unsigned int blocks = 1 + ((len + 8) / 64);
-	unsigned char* pend = pdata + 64 * blocks;
-	memset(pdata + len, 0, 64 * blocks - len);
-	pdata[len] = 0x80;
-	unsigned int bits = len * 8;
-	pend[-1] = (bits >> 0) & 0xff;
-	pend[-2] = (bits >> 8) & 0xff;
-	pend[-3] = (bits >> 16) & 0xff;
-	pend[-4] = (bits >> 24) & 0xff;
-	return blocks;
+    unsigned char* pdata = (unsigned char*)pbuffer;
+    unsigned int blocks = 1 + ((len + 8) / 64);
+    unsigned char* pend = pdata + 64 * blocks;
+    memset(pdata + len, 0, 64 * blocks - len);
+    pdata[len] = 0x80;
+    unsigned int bits = len * 8;
+    pend[-1] = (bits >> 0) & 0xff;
+    pend[-2] = (bits >> 8) & 0xff;
+    pend[-3] = (bits >> 16) & 0xff;
+    pend[-4] = (bits >> 24) & 0xff;
+    return blocks;
 }
 
 static const unsigned int pSHA256InitState[8] =
-{ 0x6a09e667, 0xbb67ae85, 0x3c6ef372, 0xa54ff53a, 0x510e527f, 0x9b05688c, 0x1f83d9ab, 0x5be0cd19 };
+{0x6a09e667, 0xbb67ae85, 0x3c6ef372, 0xa54ff53a, 0x510e527f, 0x9b05688c, 0x1f83d9ab, 0x5be0cd19};
 
 void SHA256Transform(void* pstate, void* pinput, const void* pinit)
 {
-	SHA256_CTX ctx;
-	unsigned char data[64];
+    SHA256_CTX ctx;
+    unsigned char data[64];
 
-	SHA256_Init(&ctx);
+    SHA256_Init(&ctx);
 
-	for (int i = 0; i < 16; i++)
-		((uint32_t*)data)[i] = ByteReverse(((uint32_t*)pinput)[i]);
+    for (int i = 0; i < 16; i++)
+        ((uint32_t*)data)[i] = ByteReverse(((uint32_t*)pinput)[i]);
 
-	for (int i = 0; i < 8; i++)
-		ctx.h[i] = ((uint32_t*)pinit)[i];
+    for (int i = 0; i < 8; i++)
+        ctx.h[i] = ((uint32_t*)pinit)[i];
 
-	SHA256_Update(&ctx, data, sizeof(data));
-	for (int i = 0; i < 8; i++)
-		((uint32_t*)pstate)[i] = ctx.h[i];
+    SHA256_Update(&ctx, data, sizeof(data));
+    for (int i = 0; i < 8; i++)
+        ((uint32_t*)pstate)[i] = ctx.h[i];
 }
 
 // Some explaining would be appreciated
 class COrphan
 {
 public:
-	CTransaction* ptx;
-	set<uint256> setDependsOn;
-	double dPriority;
-	double dFeePerKb;
+    CTransaction* ptx;
+    set<uint256> setDependsOn;
+    double dPriority;
+    double dFeePerKb;
 
-	COrphan(CTransaction* ptxIn)
-	{
-		ptx = ptxIn;
-		dPriority = dFeePerKb = 0;
-	}
+    COrphan(CTransaction* ptxIn)
+    {
+        ptx = ptxIn;
+        dPriority = dFeePerKb = 0;
+    }
 
-	void print() const
-	{
-		printf("COrphan(hash=%s, dPriority=%.1f, dFeePerKb=%.1f)\n",
-			ptx->GetHash().ToString().c_str(), dPriority, dFeePerKb);
-		BOOST_FOREACH(uint256 hash, setDependsOn)
-			printf("   setDependsOn %s\n", hash.ToString().c_str());
-	}
+    void print() const
+    {
+        printf("COrphan(hash=%s, dPriority=%.1f, dFeePerKb=%.1f)\n",
+            ptx->GetHash().ToString().c_str(), dPriority, dFeePerKb);
+        BOOST_FOREACH(uint256 hash, setDependsOn)
+            printf("   setDependsOn %s\n", hash.ToString().c_str());
+    }
 };
 
 
@@ -5681,538 +5681,538 @@ uint64 nLastBlockSize = 0;
 typedef boost::tuple<double, double, CTransaction*> TxPriority;
 class TxPriorityCompare
 {
-	bool byFee;
+    bool byFee;
 public:
-	TxPriorityCompare(bool _byFee) : byFee(_byFee) { }
-	bool operator()(const TxPriority& a, const TxPriority& b)
-	{
-		if (byFee)
-		{
-			if (a.get<1>() == b.get<1>())
-				return a.get<0>() < b.get<0>();
-			return a.get<1>() < b.get<1>();
-		}
-		else
-		{
-			if (a.get<0>() == b.get<0>())
-				return a.get<1>() < b.get<1>();
-			return a.get<0>() < b.get<0>();
-		}
-	}
+    TxPriorityCompare(bool _byFee) : byFee(_byFee) { }
+    bool operator()(const TxPriority& a, const TxPriority& b)
+    {
+        if (byFee)
+        {
+            if (a.get<1>() == b.get<1>())
+                return a.get<0>() < b.get<0>();
+            return a.get<1>() < b.get<1>();
+        }
+        else
+        {
+            if (a.get<0>() == b.get<0>())
+                return a.get<1>() < b.get<1>();
+            return a.get<0>() < b.get<0>();
+        }
+    }
 };
 
 CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
 {
-	// Create new block
-	auto_ptr<CBlockTemplate> pblocktemplate(new CBlockTemplate());
-	if (!pblocktemplate.get())
-		return NULL;
-	CBlock *pblock = &pblocktemplate->block; // pointer for convenience
+    // Create new block
+    auto_ptr<CBlockTemplate> pblocktemplate(new CBlockTemplate());
+    if (!pblocktemplate.get())
+        return NULL;
+    CBlock *pblock = &pblocktemplate->block; // pointer for convenience
 
-											 // Create coinbase tx
-	CTransaction txNew;
-	txNew.vin.resize(1);
-	txNew.vin[0].prevout.SetNull();
-	txNew.vout.resize(1);
-	txNew.vout[0].scriptPubKey = scriptPubKeyIn;
-	txNew.vout[0].nValue = 0;
+                                             // Create coinbase tx
+    CTransaction txNew;
+    txNew.vin.resize(1);
+    txNew.vin[0].prevout.SetNull();
+    txNew.vout.resize(1);
+    txNew.vout[0].scriptPubKey = scriptPubKeyIn;
+    txNew.vout[0].nValue = 0;
 
-	CBlock lastBLock;
-	lastBLock.ReadFromDisk(pindexBest);
+    CBlock lastBLock;
+    lastBLock.ReadFromDisk(pindexBest);
 
-	/*    int64 nFees = 0;
-	CCoinsViewCache view(*pcoinsTip, true);
+    /*    int64 nFees = 0;
+    CCoinsViewCache view(*pcoinsTip, true);
 
-	for (unsigned int i=0; i<lastBLock.vtx.size(); i++)
-	{
-	const CTransaction &tx = lastBLock.vtx[i];
-	nFees += tx.GetValueIn(view)-tx.GetValueOut();
-	}
-	*/
-	// To SmartHive Teams, SmartHive Budget, and SmartDeposits
-	if ((pindexBest->nHeight + 1 > 0) && (pindexBest->nHeight + 1 < 717499999)) {
-		// Take out amounts for budgets.
-		txNew.vout[0].nValue = -((int64)(0.95 * (GetBlockValue(pindexBest->nHeight + 1, 0, pindexBest->nTime))));
+    for (unsigned int i=0; i<lastBLock.vtx.size(); i++)
+    {
+    const CTransaction &tx = lastBLock.vtx[i];
+    nFees += tx.GetValueIn(view)-tx.GetValueOut();
+    }
+    */
+    // To SmartHive Teams, SmartHive Budget, and SmartDeposits
+    if ((pindexBest->nHeight + 1 > 0) && (pindexBest->nHeight + 1 < 717499999)) {
+        // Take out amounts for budgets.
+        txNew.vout[0].nValue = -((int64)(0.95 * (GetBlockValue(pindexBest->nHeight + 1, 0, pindexBest->nTime))));
 
-		CScript FOUNDER_1_SCRIPT;
-		CScript FOUNDER_2_SCRIPT;
-		CScript FOUNDER_3_SCRIPT;
-		CScript FOUNDER_4_SCRIPT;
-		CScript FOUNDER_5_SCRIPT;
+        CScript FOUNDER_1_SCRIPT;
+        CScript FOUNDER_2_SCRIPT;
+        CScript FOUNDER_3_SCRIPT;
+        CScript FOUNDER_4_SCRIPT;
+        CScript FOUNDER_5_SCRIPT;
 
-		if (!fTestNet && (GetAdjustedTime() > nStartRewardTime)) {
-			FOUNDER_1_SCRIPT.SetDestination(CBitcoinAddress("Siim7T5zMH3he8xxtQzhmHs4CQSuMrCV1M").Get());
-			FOUNDER_2_SCRIPT.SetDestination(CBitcoinAddress("SW2FbVaBhU1Www855V37auQzGQd8fuLR9x").Get());
-			FOUNDER_3_SCRIPT.SetDestination(CBitcoinAddress("SPusYr5tUdUyRXevJg7pnCc9Sm4HEzaYZF").Get());
-			FOUNDER_4_SCRIPT.SetDestination(CBitcoinAddress("SU5bKb35xUV8aHG5dNarWHB3HBVjcCRjYo").Get());
-			FOUNDER_5_SCRIPT.SetDestination(CBitcoinAddress("SXun9XDHLdBhG4Yd1ueZfLfRpC9kZgwT1b").Get());
-		}
-		else if (!fTestNet && (GetAdjustedTime() <= nStartRewardTime)) {
-			throw std::runtime_error("CreateNewBlock() : Create new block too early");
-		}
-		else {
-			FOUNDER_1_SCRIPT.SetDestination(CBitcoinAddress("TBizCRSozKpCbheftmzs75fZnc7h6HocJ3").Get());
-			FOUNDER_2_SCRIPT.SetDestination(CBitcoinAddress("THc8faox1kKZ3aegLdU4cwCJwgehLHSe9M").Get());
-			FOUNDER_3_SCRIPT.SetDestination(CBitcoinAddress("TK7CPJ2BS2UxAc7KBbUYySCBczww97Qr7p").Get());
-			FOUNDER_4_SCRIPT.SetDestination(CBitcoinAddress("TUPAY3ziYY7znMLxRJJNuvfuFWS1snrjiM").Get());
-			FOUNDER_5_SCRIPT.SetDestination(CBitcoinAddress("TMtxkvmAMyL5siHX1n3zKAvAKnev8if8KA").Get());
-		}
+        if (!fTestNet && (GetAdjustedTime() > nStartRewardTime)) {
+            FOUNDER_1_SCRIPT.SetDestination(CBitcoinAddress("Siim7T5zMH3he8xxtQzhmHs4CQSuMrCV1M").Get());
+            FOUNDER_2_SCRIPT.SetDestination(CBitcoinAddress("SW2FbVaBhU1Www855V37auQzGQd8fuLR9x").Get());
+            FOUNDER_3_SCRIPT.SetDestination(CBitcoinAddress("SPusYr5tUdUyRXevJg7pnCc9Sm4HEzaYZF").Get());
+            FOUNDER_4_SCRIPT.SetDestination(CBitcoinAddress("SU5bKb35xUV8aHG5dNarWHB3HBVjcCRjYo").Get());
+            FOUNDER_5_SCRIPT.SetDestination(CBitcoinAddress("SXun9XDHLdBhG4Yd1ueZfLfRpC9kZgwT1b").Get());
+        }
+        else if (!fTestNet && (GetAdjustedTime() <= nStartRewardTime)) {
+            throw std::runtime_error("CreateNewBlock() : Create new block too early");
+        }
+        else {
+            FOUNDER_1_SCRIPT.SetDestination(CBitcoinAddress("TBizCRSozKpCbheftmzs75fZnc7h6HocJ3").Get());
+            FOUNDER_2_SCRIPT.SetDestination(CBitcoinAddress("THc8faox1kKZ3aegLdU4cwCJwgehLHSe9M").Get());
+            FOUNDER_3_SCRIPT.SetDestination(CBitcoinAddress("TK7CPJ2BS2UxAc7KBbUYySCBczww97Qr7p").Get());
+            FOUNDER_4_SCRIPT.SetDestination(CBitcoinAddress("TUPAY3ziYY7znMLxRJJNuvfuFWS1snrjiM").Get());
+            FOUNDER_5_SCRIPT.SetDestination(CBitcoinAddress("TMtxkvmAMyL5siHX1n3zKAvAKnev8if8KA").Get());
+        }
 
-		// And pay the budgets
-		txNew.vout.push_back(CTxOut((int64)(0.08 * (GetBlockValue(pindexBest->nHeight + 1, 0, pindexBest->nTime))), CScript(FOUNDER_1_SCRIPT.begin(), FOUNDER_1_SCRIPT.end())));
-		txNew.vout.push_back(CTxOut((int64)(0.08 * (GetBlockValue(pindexBest->nHeight + 1, 0, pindexBest->nTime))), CScript(FOUNDER_2_SCRIPT.begin(), FOUNDER_2_SCRIPT.end())));
-		txNew.vout.push_back(CTxOut((int64)(0.08 * (GetBlockValue(pindexBest->nHeight + 1, 0, pindexBest->nTime))), CScript(FOUNDER_3_SCRIPT.begin(), FOUNDER_3_SCRIPT.end())));
-		txNew.vout.push_back(CTxOut((int64)(0.15 * (GetBlockValue(pindexBest->nHeight + 1, 0, pindexBest->nTime))), CScript(FOUNDER_4_SCRIPT.begin(), FOUNDER_4_SCRIPT.end())));
-		txNew.vout.push_back(CTxOut((int64)(0.56 * (GetBlockValue(pindexBest->nHeight + 1, 0, pindexBest->nTime))), CScript(FOUNDER_5_SCRIPT.begin(), FOUNDER_5_SCRIPT.end())));
-	}
-	// Add our coinbase tx as first transaction
-	pblock->vtx.push_back(txNew);
-	pblocktemplate->vTxFees.push_back(-1); // updated at end
-	pblocktemplate->vTxSigOps.push_back(-1); // updated at end
+        // And pay the budgets
+        txNew.vout.push_back(CTxOut((int64)(0.08 * (GetBlockValue(pindexBest->nHeight + 1, 0, pindexBest->nTime))), CScript(FOUNDER_1_SCRIPT.begin(), FOUNDER_1_SCRIPT.end())));
+        txNew.vout.push_back(CTxOut((int64)(0.08 * (GetBlockValue(pindexBest->nHeight + 1, 0, pindexBest->nTime))), CScript(FOUNDER_2_SCRIPT.begin(), FOUNDER_2_SCRIPT.end())));
+        txNew.vout.push_back(CTxOut((int64)(0.08 * (GetBlockValue(pindexBest->nHeight + 1, 0, pindexBest->nTime))), CScript(FOUNDER_3_SCRIPT.begin(), FOUNDER_3_SCRIPT.end())));
+        txNew.vout.push_back(CTxOut((int64)(0.15 * (GetBlockValue(pindexBest->nHeight + 1, 0, pindexBest->nTime))), CScript(FOUNDER_4_SCRIPT.begin(), FOUNDER_4_SCRIPT.end())));
+        txNew.vout.push_back(CTxOut((int64)(0.56 * (GetBlockValue(pindexBest->nHeight + 1, 0, pindexBest->nTime))), CScript(FOUNDER_5_SCRIPT.begin(), FOUNDER_5_SCRIPT.end())));
+    }
+    // Add our coinbase tx as first transaction
+    pblock->vtx.push_back(txNew);
+    pblocktemplate->vTxFees.push_back(-1); // updated at end
+    pblocktemplate->vTxSigOps.push_back(-1); // updated at end
 
-											 // Largest block you're willing to create:
-	unsigned int nBlockMaxSize = GetArg("-blockmaxsize", DEFAULT_BLOCK_MAX_SIZE);
-	// Limit to betweeen 1K and MAX_BLOCK_SIZE-1K for sanity:
-	nBlockMaxSize = std::max((unsigned int)1000, std::min((unsigned int)(MAX_BLOCK_SIZE - 1000), nBlockMaxSize));
+                                             // Largest block you're willing to create:
+    unsigned int nBlockMaxSize = GetArg("-blockmaxsize", DEFAULT_BLOCK_MAX_SIZE);
+    // Limit to betweeen 1K and MAX_BLOCK_SIZE-1K for sanity:
+    nBlockMaxSize = std::max((unsigned int)1000, std::min((unsigned int)(MAX_BLOCK_SIZE - 1000), nBlockMaxSize));
 
-	// How much of the block should be dedicated to high-priority transactions,
-	// included regardless of the fees they pay
-	unsigned int nBlockPrioritySize = GetArg("-blockprioritysize", DEFAULT_BLOCK_PRIORITY_SIZE);
-	nBlockPrioritySize = std::min(nBlockMaxSize, nBlockPrioritySize);
+    // How much of the block should be dedicated to high-priority transactions,
+    // included regardless of the fees they pay
+    unsigned int nBlockPrioritySize = GetArg("-blockprioritysize", DEFAULT_BLOCK_PRIORITY_SIZE);
+    nBlockPrioritySize = std::min(nBlockMaxSize, nBlockPrioritySize);
 
-	// Minimum block size you want to create; block will be filled with free transactions
-	// until there are no more or the block reaches this size:
-	unsigned int nBlockMinSize = GetArg("-blockminsize", 0);
-	nBlockMinSize = std::min(nBlockMaxSize, nBlockMinSize);
+    // Minimum block size you want to create; block will be filled with free transactions
+    // until there are no more or the block reaches this size:
+    unsigned int nBlockMinSize = GetArg("-blockminsize", 0);
+    nBlockMinSize = std::min(nBlockMaxSize, nBlockMinSize);
 
-	unsigned int COUNT_SPEND_ZC_TX = 0;
-	unsigned int MAX_SPEND_ZC_TX_PER_BLOCK = 1;
+    unsigned int COUNT_SPEND_ZC_TX = 0;
+    unsigned int MAX_SPEND_ZC_TX_PER_BLOCK = 1;
 
-	// Collect memory pool transactions into the block
-	//    nFees = 0;
-	int64 nFees = 0;
-	{
-		LOCK2(cs_main, mempool.cs);
-		CBlockIndex* pindexPrev = pindexBest;
-		CCoinsViewCache view(*pcoinsTip, true);
+    // Collect memory pool transactions into the block
+    //    nFees = 0;
+    int64 nFees = 0;
+    {
+        LOCK2(cs_main, mempool.cs);
+        CBlockIndex* pindexPrev = pindexBest;
+        CCoinsViewCache view(*pcoinsTip, true);
 
-		// Priority order to process transactions
-		list<COrphan> vOrphan; // list memory doesn't move
-		map<uint256, vector<COrphan*> > mapDependers;
-		bool fPrintPriority = GetBoolArg("-printpriority");
+        // Priority order to process transactions
+        list<COrphan> vOrphan; // list memory doesn't move
+        map<uint256, vector<COrphan*> > mapDependers;
+        bool fPrintPriority = GetBoolArg("-printpriority");
 
-		// Collect transactions into block
-		uint64 nBlockSize = 1000;
-		uint64 nBlockTx = 0;
-		int nBlockSigOps = 100;
-		bool fSortedByFee = (nBlockPrioritySize <= 0);
+        // Collect transactions into block
+        uint64 nBlockSize = 1000;
+        uint64 nBlockTx = 0;
+        int nBlockSigOps = 100;
+        bool fSortedByFee = (nBlockPrioritySize <= 0);
 
-		// This vector will be sorted into a priority queue:
-		vector<TxPriority> vecPriority;
-		vecPriority.reserve(mempool.mapTx.size());
+        // This vector will be sorted into a priority queue:
+        vector<TxPriority> vecPriority;
+        vecPriority.reserve(mempool.mapTx.size());
 
-		// printf("mempool.mapTx.size() = %d\n", mempool.mapTx.size());
+        // printf("mempool.mapTx.size() = %d\n", mempool.mapTx.size());
 
-		for (map<uint256, CTransaction>::iterator mi = mempool.mapTx.begin(); mi != mempool.mapTx.end(); ++mi)
-		{
-			CTransaction& tx = (*mi).second;
-			if (tx.IsCoinBase() || !tx.IsFinal())
-				continue;
+        for (map<uint256, CTransaction>::iterator mi = mempool.mapTx.begin(); mi != mempool.mapTx.end(); ++mi)
+        {
+            CTransaction& tx = (*mi).second;
+            if (tx.IsCoinBase() || !tx.IsFinal())
+                continue;
 
-			if (tx.IsZerocoinSpend())
-			{
+            if (tx.IsZerocoinSpend())
+            {
 
-				if (COUNT_SPEND_ZC_TX >= MAX_SPEND_ZC_TX_PER_BLOCK) {
-					continue;
-				}
+                if (COUNT_SPEND_ZC_TX >= MAX_SPEND_ZC_TX_PER_BLOCK) {
+                    continue;
+                }
 
-				//mempool.countZCSpend--;
-				// Size limits
-				unsigned int nTxSize = ::GetSerializeSize(tx, SER_NETWORK, PROTOCOL_VERSION);
+                //mempool.countZCSpend--;
+                // Size limits
+                unsigned int nTxSize = ::GetSerializeSize(tx, SER_NETWORK, PROTOCOL_VERSION);
 
-				printf("\n\n\n\n######################################\n");
-				printf("nBlockMaxSize = %d\n", nBlockMaxSize);
-				printf("nBlockSize = %d\n", nBlockSize);
-				printf("nTxSize = %d\n", nTxSize);
-				printf("nBlockSize + nTxSize  = %d\n", nBlockSize + nTxSize);
-				printf("######################################\n\n\n\n\n");
+                printf("\n\n\n\n######################################\n");
+                printf("nBlockMaxSize = %d\n", nBlockMaxSize);
+                printf("nBlockSize = %d\n", nBlockSize);
+                printf("nTxSize = %d\n", nTxSize);
+                printf("nBlockSize + nTxSize  = %d\n", nBlockSize + nTxSize);
+                printf("######################################\n\n\n\n\n");
 
-				if (nBlockSize + nTxSize >= nBlockMaxSize)
-					continue;
+                if (nBlockSize + nTxSize >= nBlockMaxSize)
+                    continue;
 
-				// Legacy limits on sigOps:
-				unsigned int nTxSigOps = tx.GetLegacySigOpCount();
-				if (nBlockSigOps + nTxSigOps >= MAX_BLOCK_SIGOPS)
-					continue;
+                // Legacy limits on sigOps:
+                unsigned int nTxSigOps = tx.GetLegacySigOpCount();
+                if (nBlockSigOps + nTxSigOps >= MAX_BLOCK_SIGOPS)
+                    continue;
 
-				int64 nTxFees = 0;
+                int64 nTxFees = 0;
 
-				pblock->vtx.push_back(tx);
-				pblocktemplate->vTxFees.push_back(nTxFees);
-				pblocktemplate->vTxSigOps.push_back(nTxSigOps);
-				nBlockSize += nTxSize;
-				++nBlockTx;
-				nBlockSigOps += nTxSigOps;
-				nFees += nTxFees;
-				COUNT_SPEND_ZC_TX++;
-				continue;
-			}
+                pblock->vtx.push_back(tx);
+                pblocktemplate->vTxFees.push_back(nTxFees);
+                pblocktemplate->vTxSigOps.push_back(nTxSigOps);
+                nBlockSize += nTxSize;
+                ++nBlockTx;
+                nBlockSigOps += nTxSigOps;
+                nFees += nTxFees;
+                COUNT_SPEND_ZC_TX++;
+                continue;
+            }
 
-			COrphan* porphan = NULL;
-			double dPriority = 0;
-			int64 nTotalIn = 0;
-			bool fMissingInputs = false;
-			BOOST_FOREACH(const CTxIn& txin, tx.vin)
-			{
-				// Read prev transaction
-				if (!view.HaveCoins(txin.prevout.hash))
-				{
-					// This should never happen; all transactions in the memory
-					// pool should connect to either transactions in the chain
-					// or other transactions in the memory pool.
-					if (!mempool.mapTx.count(txin.prevout.hash))
-					{
-						printf("ERROR: mempool transaction missing input\n");
-						if (fDebug) assert("mempool transaction missing input" == 0);
-						fMissingInputs = true;
-						if (porphan)
-							vOrphan.pop_back();
-						break;
-					}
+            COrphan* porphan = NULL;
+            double dPriority = 0;
+            int64 nTotalIn = 0;
+            bool fMissingInputs = false;
+            BOOST_FOREACH(const CTxIn& txin, tx.vin)
+            {
+                // Read prev transaction
+                if (!view.HaveCoins(txin.prevout.hash))
+                {
+                    // This should never happen; all transactions in the memory
+                    // pool should connect to either transactions in the chain
+                    // or other transactions in the memory pool.
+                    if (!mempool.mapTx.count(txin.prevout.hash))
+                    {
+                        printf("ERROR: mempool transaction missing input\n");
+                        if (fDebug) assert("mempool transaction missing input" == 0);
+                        fMissingInputs = true;
+                        if (porphan)
+                            vOrphan.pop_back();
+                        break;
+                    }
 
-					// Has to wait for dependencies
-					if (!porphan)
-					{
-						// Use list for automatic deletion
-						vOrphan.push_back(COrphan(&tx));
-						porphan = &vOrphan.back();
-					}
-					mapDependers[txin.prevout.hash].push_back(porphan);
-					porphan->setDependsOn.insert(txin.prevout.hash);
-					nTotalIn += mempool.mapTx[txin.prevout.hash].vout[txin.prevout.n].nValue;
-					continue;
-				}
+                    // Has to wait for dependencies
+                    if (!porphan)
+                    {
+                        // Use list for automatic deletion
+                        vOrphan.push_back(COrphan(&tx));
+                        porphan = &vOrphan.back();
+                    }
+                    mapDependers[txin.prevout.hash].push_back(porphan);
+                    porphan->setDependsOn.insert(txin.prevout.hash);
+                    nTotalIn += mempool.mapTx[txin.prevout.hash].vout[txin.prevout.n].nValue;
+                    continue;
+                }
 
-				const CCoins &coins = view.GetCoins(txin.prevout.hash);
+                const CCoins &coins = view.GetCoins(txin.prevout.hash);
 
-				int64 nValueIn = coins.vout[txin.prevout.n].nValue;
-				nTotalIn += nValueIn;
+                int64 nValueIn = coins.vout[txin.prevout.n].nValue;
+                nTotalIn += nValueIn;
 
-				int nConf = pindexPrev->nHeight - coins.nHeight + 1;
+                int nConf = pindexPrev->nHeight - coins.nHeight + 1;
 
-				dPriority += (double)nValueIn * nConf;
-
-
-			}
-			if (fMissingInputs) continue;
-
-			// Priority is sum(valuein * age) / txsize
-			unsigned int nTxSize = ::GetSerializeSize(tx, SER_NETWORK, PROTOCOL_VERSION);
-			dPriority /= nTxSize;
-
-			// This is a more accurate fee-per-kilobyte than is used by the client code, because the
-			// client code rounds up the size to the nearest 1K. That's good, because it gives an
-			// incentive to create smaller transactions.
-			double dFeePerKb = double(nTotalIn - tx.GetValueOut()) / (double(nTxSize) / 1000.0);
-
-			if (porphan)
-			{
-				porphan->dPriority = dPriority;
-				porphan->dFeePerKb = dFeePerKb;
-			}
-			else
-				vecPriority.push_back(TxPriority(dPriority, dFeePerKb, &(*mi).second));
-		}
-
-		printf("mempool.countZCSpend = %d\n", mempool.countZCSpend);
-		//if(mempool.countZCSpend != 0) return NULL;
-
-		TxPriorityCompare comparer(fSortedByFee);
-		std::make_heap(vecPriority.begin(), vecPriority.end(), comparer);
-
-		while (!vecPriority.empty())
-		{
-			// Take highest priority transaction off the priority queue:
-			double dPriority = vecPriority.front().get<0>();
-			double dFeePerKb = vecPriority.front().get<1>();
-			CTransaction& tx = *(vecPriority.front().get<2>());
+                dPriority += (double)nValueIn * nConf;
 
 
-			std::pop_heap(vecPriority.begin(), vecPriority.end(), comparer);
-			vecPriority.pop_back();
+            }
+            if (fMissingInputs) continue;
 
-			// Size limits
-			unsigned int nTxSize = ::GetSerializeSize(tx, SER_NETWORK, PROTOCOL_VERSION);
-			if (nBlockSize + nTxSize >= nBlockMaxSize)
-				continue;
+            // Priority is sum(valuein * age) / txsize
+            unsigned int nTxSize = ::GetSerializeSize(tx, SER_NETWORK, PROTOCOL_VERSION);
+            dPriority /= nTxSize;
 
-			// Legacy limits on sigOps:
-			unsigned int nTxSigOps = tx.GetLegacySigOpCount();
-			if (nBlockSigOps + nTxSigOps >= MAX_BLOCK_SIGOPS)
-				continue;
+            // This is a more accurate fee-per-kilobyte than is used by the client code, because the
+            // client code rounds up the size to the nearest 1K. That's good, because it gives an
+            // incentive to create smaller transactions.
+            double dFeePerKb = double(nTotalIn - tx.GetValueOut()) / (double(nTxSize) / 1000.0);
 
-			// Skip free transactions if we're past the minimum block size:
-			if (fSortedByFee && (dFeePerKb < CTransaction::nMinTxFee) && (nBlockSize + nTxSize >= nBlockMinSize))
-				continue;
+            if (porphan)
+            {
+                porphan->dPriority = dPriority;
+                porphan->dFeePerKb = dFeePerKb;
+            }
+            else
+                vecPriority.push_back(TxPriority(dPriority, dFeePerKb, &(*mi).second));
+        }
 
-			// Prioritize by fee once past the priority size or we run out of high-priority
-			// transactions:
-			if (!fSortedByFee &&
-				((nBlockSize + nTxSize >= nBlockPrioritySize) || (dPriority < COIN * 144 / 250)))
-			{
-				fSortedByFee = true;
-				comparer = TxPriorityCompare(fSortedByFee);
-				std::make_heap(vecPriority.begin(), vecPriority.end(), comparer);
-			}
+        printf("mempool.countZCSpend = %d\n", mempool.countZCSpend);
+        //if(mempool.countZCSpend != 0) return NULL;
 
-			if (!tx.HaveInputs(view))
-				continue;
+        TxPriorityCompare comparer(fSortedByFee);
+        std::make_heap(vecPriority.begin(), vecPriority.end(), comparer);
 
-			int64 nTxFees = tx.GetValueIn(view) - tx.GetValueOut();
-
-			nTxSigOps += tx.GetP2SHSigOpCount(view);
-			if (nBlockSigOps + nTxSigOps >= MAX_BLOCK_SIGOPS)
-				continue;
-
-			CValidationState state;
-			if (!tx.CheckInputs(state, view, true, SCRIPT_VERIFY_P2SH))
-				continue;
-
-			CTxUndo txundo;
-			uint256 hash = tx.GetHash();
-			tx.UpdateCoins(state, view, txundo, pindexPrev->nHeight + 1, hash);
-
-			// Added
-			pblock->vtx.push_back(tx);
-			pblocktemplate->vTxFees.push_back(nTxFees);
-			pblocktemplate->vTxSigOps.push_back(nTxSigOps);
-			nBlockSize += nTxSize;
-			++nBlockTx;
-			nBlockSigOps += nTxSigOps;
-			nFees += nTxFees;
-
-			if (fPrintPriority)
-			{
-				printf("priority %.1f feeperkb %.1f txid %s\n",
-					dPriority, dFeePerKb, tx.GetHash().ToString().c_str());
-			}
-
-			// Add transactions that depend on this one to the priority queue
-			if (mapDependers.count(hash))
-			{
-				BOOST_FOREACH(COrphan* porphan, mapDependers[hash])
-				{
-					if (!porphan->setDependsOn.empty())
-					{
-						porphan->setDependsOn.erase(hash);
-						if (porphan->setDependsOn.empty())
-						{
-							vecPriority.push_back(TxPriority(porphan->dPriority, porphan->dFeePerKb, porphan->ptx));
-							std::push_heap(vecPriority.begin(), vecPriority.end(), comparer);
-						}
-					}
-				}
-			}
-		}
-
-		nLastBlockTx = nBlockTx;
-		nLastBlockSize = nBlockSize;
-		printf("CreateNewBlock(): total size %" PRI64u"\n", nBlockSize);
+        while (!vecPriority.empty())
+        {
+            // Take highest priority transaction off the priority queue:
+            double dPriority = vecPriority.front().get<0>();
+            double dFeePerKb = vecPriority.front().get<1>();
+            CTransaction& tx = *(vecPriority.front().get<2>());
 
 
+            std::pop_heap(vecPriority.begin(), vecPriority.end(), comparer);
+            vecPriority.pop_back();
 
-		// Fill in header
-		pblock->hashPrevBlock = pindexPrev->GetBlockHash();
-		//        pblock->LastHeight = pindexPrev->nHeight;
-		pblock->UpdateTime(pindexPrev);
-		pblock->nBits = GetNextWorkRequired(pindexPrev, pblock);
-		pblock->nNonce = 0;
-		pblock->vtx[0].vin[0].scriptSig = CScript() << OP_0 << OP_0;
-		pblocktemplate->vTxSigOps[0] = pblock->vtx[0].GetLegacySigOpCount();
+            // Size limits
+            unsigned int nTxSize = ::GetSerializeSize(tx, SER_NETWORK, PROTOCOL_VERSION);
+            if (nBlockSize + nTxSize >= nBlockMaxSize)
+                continue;
 
-		pblock->vtx[0].vout[0].nValue += GetBlockValue(pindexPrev->nHeight + 1, nFees, pblock->nTime);
-		pblocktemplate->vTxFees[0] = -nFees;
+            // Legacy limits on sigOps:
+            unsigned int nTxSigOps = tx.GetLegacySigOpCount();
+            if (nBlockSigOps + nTxSigOps >= MAX_BLOCK_SIGOPS)
+                continue;
 
-		CBlockIndex indexDummy(*pblock);
-		indexDummy.pprev = pindexPrev;
-		indexDummy.nHeight = pindexPrev->nHeight + 1;
-		CCoinsViewCache viewNew(*pcoinsTip, true);
-		CValidationState state;
-		if (!pblock->ConnectBlock(state, &indexDummy, viewNew, true))
-			throw std::runtime_error("CreateNewBlock() : ConnectBlock failed");
-	}
+            // Skip free transactions if we're past the minimum block size:
+            if (fSortedByFee && (dFeePerKb < CTransaction::nMinTxFee) && (nBlockSize + nTxSize >= nBlockMinSize))
+                continue;
 
-	return pblocktemplate.release();
+            // Prioritize by fee once past the priority size or we run out of high-priority
+            // transactions:
+            if (!fSortedByFee &&
+                ((nBlockSize + nTxSize >= nBlockPrioritySize) || (dPriority < COIN * 144 / 250)))
+            {
+                fSortedByFee = true;
+                comparer = TxPriorityCompare(fSortedByFee);
+                std::make_heap(vecPriority.begin(), vecPriority.end(), comparer);
+            }
+
+            if (!tx.HaveInputs(view))
+                continue;
+
+            int64 nTxFees = tx.GetValueIn(view) - tx.GetValueOut();
+
+            nTxSigOps += tx.GetP2SHSigOpCount(view);
+            if (nBlockSigOps + nTxSigOps >= MAX_BLOCK_SIGOPS)
+                continue;
+
+            CValidationState state;
+            if (!tx.CheckInputs(state, view, true, SCRIPT_VERIFY_P2SH))
+                continue;
+
+            CTxUndo txundo;
+            uint256 hash = tx.GetHash();
+            tx.UpdateCoins(state, view, txundo, pindexPrev->nHeight + 1, hash);
+
+            // Added
+            pblock->vtx.push_back(tx);
+            pblocktemplate->vTxFees.push_back(nTxFees);
+            pblocktemplate->vTxSigOps.push_back(nTxSigOps);
+            nBlockSize += nTxSize;
+            ++nBlockTx;
+            nBlockSigOps += nTxSigOps;
+            nFees += nTxFees;
+
+            if (fPrintPriority)
+            {
+                printf("priority %.1f feeperkb %.1f txid %s\n",
+                    dPriority, dFeePerKb, tx.GetHash().ToString().c_str());
+            }
+
+            // Add transactions that depend on this one to the priority queue
+            if (mapDependers.count(hash))
+            {
+                BOOST_FOREACH(COrphan* porphan, mapDependers[hash])
+                {
+                    if (!porphan->setDependsOn.empty())
+                    {
+                        porphan->setDependsOn.erase(hash);
+                        if (porphan->setDependsOn.empty())
+                        {
+                            vecPriority.push_back(TxPriority(porphan->dPriority, porphan->dFeePerKb, porphan->ptx));
+                            std::push_heap(vecPriority.begin(), vecPriority.end(), comparer);
+                        }
+                    }
+                }
+            }
+        }
+
+        nLastBlockTx = nBlockTx;
+        nLastBlockSize = nBlockSize;
+        printf("CreateNewBlock(): total size %" PRI64u"\n", nBlockSize);
+
+
+
+        // Fill in header
+        pblock->hashPrevBlock = pindexPrev->GetBlockHash();
+        //        pblock->LastHeight = pindexPrev->nHeight;
+        pblock->UpdateTime(pindexPrev);
+        pblock->nBits = GetNextWorkRequired(pindexPrev, pblock);
+        pblock->nNonce = 0;
+        pblock->vtx[0].vin[0].scriptSig = CScript() << OP_0 << OP_0;
+        pblocktemplate->vTxSigOps[0] = pblock->vtx[0].GetLegacySigOpCount();
+
+        pblock->vtx[0].vout[0].nValue += GetBlockValue(pindexPrev->nHeight + 1, nFees, pblock->nTime);
+        pblocktemplate->vTxFees[0] = -nFees;
+
+        CBlockIndex indexDummy(*pblock);
+        indexDummy.pprev = pindexPrev;
+        indexDummy.nHeight = pindexPrev->nHeight + 1;
+        CCoinsViewCache viewNew(*pcoinsTip, true);
+        CValidationState state;
+        if (!pblock->ConnectBlock(state, &indexDummy, viewNew, true))
+            throw std::runtime_error("CreateNewBlock() : ConnectBlock failed");
+    }
+
+    return pblocktemplate.release();
 }
 
 CBlockTemplate* CreateNewBlockWithKey(CReserveKey& reservekey)
 {
-	CPubKey pubkey;
-	if (!reservekey.GetReservedKey(pubkey))
-		return NULL;
+    CPubKey pubkey;
+    if (!reservekey.GetReservedKey(pubkey))
+        return NULL;
 
-	CScript scriptPubKey = CScript() << pubkey << OP_CHECKSIG;
-	return CreateNewBlock(scriptPubKey);
+    CScript scriptPubKey = CScript() << pubkey << OP_CHECKSIG;
+    return CreateNewBlock(scriptPubKey);
 }
 
 void IncrementExtraNonce(CBlock* pblock, CBlockIndex* pindexPrev, unsigned int& nExtraNonce)
 {
-	// Update nExtraNonce
-	static uint256 hashPrevBlock;
-	if (hashPrevBlock != pblock->hashPrevBlock)
-	{
-		nExtraNonce = 0;
-		hashPrevBlock = pblock->hashPrevBlock;
-	}
-	++nExtraNonce;
-	unsigned int nHeight = pindexPrev->nHeight + 1; // Height first in coinbase required for block.version=2
-	pblock->vtx[0].vin[0].scriptSig = (CScript() << nHeight << CBigNum(nExtraNonce)) + COINBASE_FLAGS;
-	assert(pblock->vtx[0].vin[0].scriptSig.size() <= 100);
+    // Update nExtraNonce
+    static uint256 hashPrevBlock;
+    if (hashPrevBlock != pblock->hashPrevBlock)
+    {
+        nExtraNonce = 0;
+        hashPrevBlock = pblock->hashPrevBlock;
+    }
+    ++nExtraNonce;
+    unsigned int nHeight = pindexPrev->nHeight + 1; // Height first in coinbase required for block.version=2
+    pblock->vtx[0].vin[0].scriptSig = (CScript() << nHeight << CBigNum(nExtraNonce)) + COINBASE_FLAGS;
+    assert(pblock->vtx[0].vin[0].scriptSig.size() <= 100);
 
-	pblock->hashMerkleRoot = pblock->BuildMerkleTree();
+    pblock->hashMerkleRoot = pblock->BuildMerkleTree();
 }
 
 void FormatHashBuffers(CBlock* pblock, char* pmidstate, char* pdata, char* phash1)
 {
-	//
-	// Pre-build hash buffers
-	//
-	struct
-	{
-		struct unnamed2
-		{
-			int nVersion;
-			uint256 hashPrevBlock;
-			uint256 hashMerkleRoot;
-			unsigned int nTime;
-			unsigned int nBits;
-			unsigned int nNonce;
-		}
-		block;
-		unsigned char pchPadding0[64];
-		uint256 hash1;
-		unsigned char pchPadding1[64];
-	}
-	tmp;
-	memset(&tmp, 0, sizeof(tmp));
+    //
+    // Pre-build hash buffers
+    //
+    struct
+    {
+        struct unnamed2
+        {
+            int nVersion;
+            uint256 hashPrevBlock;
+            uint256 hashMerkleRoot;
+            unsigned int nTime;
+            unsigned int nBits;
+            unsigned int nNonce;
+        }
+        block;
+        unsigned char pchPadding0[64];
+        uint256 hash1;
+        unsigned char pchPadding1[64];
+    }
+    tmp;
+    memset(&tmp, 0, sizeof(tmp));
 
-	tmp.block.nVersion = pblock->nVersion;
-	tmp.block.hashPrevBlock = pblock->hashPrevBlock;
-	tmp.block.hashMerkleRoot = pblock->hashMerkleRoot;
-	tmp.block.nTime = pblock->nTime;
-	tmp.block.nBits = pblock->nBits;
-	tmp.block.nNonce = pblock->nNonce;
+    tmp.block.nVersion = pblock->nVersion;
+    tmp.block.hashPrevBlock = pblock->hashPrevBlock;
+    tmp.block.hashMerkleRoot = pblock->hashMerkleRoot;
+    tmp.block.nTime = pblock->nTime;
+    tmp.block.nBits = pblock->nBits;
+    tmp.block.nNonce = pblock->nNonce;
 
-	FormatHashBlocks(&tmp.block, sizeof(tmp.block));
-	FormatHashBlocks(&tmp.hash1, sizeof(tmp.hash1));
+    FormatHashBlocks(&tmp.block, sizeof(tmp.block));
+    FormatHashBlocks(&tmp.hash1, sizeof(tmp.hash1));
 
-	// Byte swap all the input buffer
-	for (unsigned int i = 0; i < sizeof(tmp) / 4; i++)
-		((unsigned int*)&tmp)[i] = ByteReverse(((unsigned int*)&tmp)[i]);
+    // Byte swap all the input buffer
+    for (unsigned int i = 0; i < sizeof(tmp) / 4; i++)
+        ((unsigned int*)&tmp)[i] = ByteReverse(((unsigned int*)&tmp)[i]);
 
-	// Precalc the first half of the first hash, which stays constant
-	SHA256Transform(pmidstate, &tmp.block, pSHA256InitState);
+    // Precalc the first half of the first hash, which stays constant
+    SHA256Transform(pmidstate, &tmp.block, pSHA256InitState);
 
-	memcpy(pdata, &tmp.block, 128);
-	memcpy(phash1, &tmp.hash1, 64);
+    memcpy(pdata, &tmp.block, 128);
+    memcpy(phash1, &tmp.hash1, 64);
 }
 
 bool CheckWork(CBlock* pblock, CWallet& wallet, CReserveKey& reservekey)
 {
-	CBlockIndex* pindexPrev = NULL;
-	int nHeight = 0;
-	if (pblock->GetHash() != hashGenesisBlock)
-	{
-		BlockMap::iterator mi = mapBlockIndex.find(pblock->hashPrevBlock);
-		pindexPrev = (*mi).second;
-		nHeight = pindexPrev->nHeight + 1;
-	}
+    CBlockIndex* pindexPrev = NULL;
+    int nHeight = 0;
+    if (pblock->GetHash() != hashGenesisBlock)
+    {
+        BlockMap::iterator mi = mapBlockIndex.find(pblock->hashPrevBlock);
+        pindexPrev = (*mi).second;
+        nHeight = pindexPrev->nHeight + 1;
+    }
 
-	uint256 hash = pblock->GetPoWHash();
-	//    if (hash == 0)
-	//        return error("CheckWork() : Out of memory");
+    uint256 hash = pblock->GetPoWHash();
+    //    if (hash == 0)
+    //        return error("CheckWork() : Out of memory");
 
-	uint256 hashTarget = CBigNum().SetCompact(pblock->nBits).getuint256();
-	if (hash > hashTarget)
-		return false;
+    uint256 hashTarget = CBigNum().SetCompact(pblock->nBits).getuint256();
+    if (hash > hashTarget)
+        return false;
 
-	/*    CAuxPow *auxpow = pblock->auxpow.get();
+    /*    CAuxPow *auxpow = pblock->auxpow.get();
 
-	if (auxpow != NULL) {
-	if (!auxpow->Check(pblock->GetHash(), pblock->GetChainID()))
-	return error("AUX POW is not valid");
+    if (auxpow != NULL) {
+    if (!auxpow->Check(pblock->GetHash(), pblock->GetChainID()))
+    return error("AUX POW is not valid");
 
-	if (auxpow->GetParentBlockHash(nHeight) > hashTarget)
-	return error("AUX POW parent hash %s is not under target %s", auxpow->GetParentBlockHash(nHeight).GetHex().c_str(), hashTarget.GetHex().c_str());
-	*/
-	//// debug print
-	printf("SmartCashMiner:\n");
-	printf("proof-of-work found  \n  hash: %s  \target: %s\n", hash.GetHex().c_str(), hashTarget.GetHex().c_str());
+    if (auxpow->GetParentBlockHash(nHeight) > hashTarget)
+    return error("AUX POW parent hash %s is not under target %s", auxpow->GetParentBlockHash(nHeight).GetHex().c_str(), hashTarget.GetHex().c_str());
+    */
+    //// debug print
+    printf("SmartCashMiner:\n");
+    printf("proof-of-work found  \n  hash: %s  \target: %s\n", hash.GetHex().c_str(), hashTarget.GetHex().c_str());
 
-	/*	hash.GetHex().c_str(),
-	auxpow->GetParentBlockHash(nHeight).GetHex().c_str(),
-	hashTarget.GetHex().c_str());
+    /*    hash.GetHex().c_str(),
+    auxpow->GetParentBlockHash(nHeight).GetHex().c_str(),
+    hashTarget.GetHex().c_str());
 
-	}
-	else
-	{
-	if (hash > hashTarget)
-	return false;
-	*/
-	//// debug print
-	printf("SmartCashMiner:\n");
-	printf("proof-of-work found  \n  hash: %s  \ntarget: %s\n", hash.GetHex().c_str(), hashTarget.GetHex().c_str());
-	//    }
+    }
+    else
+    {
+    if (hash > hashTarget)
+    return false;
+    */
+    //// debug print
+    printf("SmartCashMiner:\n");
+    printf("proof-of-work found  \n  hash: %s  \ntarget: %s\n", hash.GetHex().c_str(), hashTarget.GetHex().c_str());
+    //    }
 
-	//// debug print    
-	pblock->print();
-	printf("generated %s\n", FormatMoney(pblock->vtx[0].vout[0].nValue).c_str());
+    //// debug print    
+    pblock->print();
+    printf("generated %s\n", FormatMoney(pblock->vtx[0].vout[0].nValue).c_str());
 
-	// Found a solution
-	{
-		LOCK(cs_main);
-		if (pblock->hashPrevBlock != hashBestChain)
-			return error("SmartCashMiner : generated block is stale");
+    // Found a solution
+    {
+        LOCK(cs_main);
+        if (pblock->hashPrevBlock != hashBestChain)
+            return error("SmartCashMiner : generated block is stale");
 
-		// Remove key from key pool
-		reservekey.KeepKey();
+        // Remove key from key pool
+        reservekey.KeepKey();
 
-		// Track how many getdata requests this block gets
-		{
-			LOCK(wallet.cs_wallet);
-			wallet.mapRequestCount[pblock->GetHash()] = 0;
-		}
+        // Track how many getdata requests this block gets
+        {
+            LOCK(wallet.cs_wallet);
+            wallet.mapRequestCount[pblock->GetHash()] = 0;
+        }
 
-		// Process this block the same as if we had received it from another node
-		CValidationState state;
-		if (!ProcessBlock(state, NULL, pblock))
-			return error("SmartCashMiner : ProcessBlock, block not accepted");
-	}
+        // Process this block the same as if we had received it from another node
+        CValidationState state;
+        if (!ProcessBlock(state, NULL, pblock))
+            return error("SmartCashMiner : ProcessBlock, block not accepted");
+    }
 
-	return true;
+    return true;
 }
 
 CBlockHeader CBlockIndex::GetBlockHeader() const
 {
-	CBlockHeader block;
-	/*
-	if (nVersion & BLOCK_VERSION_AUXPOW) {
-	CDiskBlockIndex diskblockindex;
-	// auxpow is not in memory, load CDiskBlockHeader
-	// from database to get it
+    CBlockHeader block;
+    /*
+    if (nVersion & BLOCK_VERSION_AUXPOW) {
+    CDiskBlockIndex diskblockindex;
+    // auxpow is not in memory, load CDiskBlockHeader
+    // from database to get it
 
-	pblocktree->ReadDiskBlockIndex(*phashBlock, diskblockindex);
-	block.auxpow = diskblockindex.auxpow;
-	}
-	*/
-	block.nVersion = nVersion;
-	if (pprev)
-		block.hashPrevBlock = pprev->GetBlockHash();
-	block.hashMerkleRoot = hashMerkleRoot;
-	block.nTime = nTime;
-	block.nBits = nBits;
-	block.nNonce = nNonce;
-	return block;
+    pblocktree->ReadDiskBlockIndex(*phashBlock, diskblockindex);
+    block.auxpow = diskblockindex.auxpow;
+    }
+    */
+    block.nVersion = nVersion;
+    if (pprev)
+        block.hashPrevBlock = pprev->GetBlockHash();
+    block.hashMerkleRoot = hashMerkleRoot;
+    block.nTime = nTime;
+    block.nBits = nBits;
+    block.nNonce = nNonce;
+    return block;
 }
 
 
