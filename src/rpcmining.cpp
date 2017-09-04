@@ -95,17 +95,14 @@ Value getmininginfo(const Array& params, bool fHelp)
             "Returns an object containing mining-related information.");
 
     Object obj;
-    obj.push_back(Pair("blocks", (int)nBestHeight));
-    obj.push_back(Pair("currentblocksize", (uint64_t)nLastBlockSize));
-    obj.push_back(Pair("currentblocktx", (uint64_t)nLastBlockTx));
-    obj.push_back(Pair("difficulty", (double)GetDifficulty()));
-    obj.push_back(Pair("errors", GetWarnings("statusbar")));
-    obj.push_back(Pair("generate", GetBoolArg("-gen")));
-    obj.push_back(Pair("genproclimit", (int)GetArg("-genproclimit", -1)));
-    //obj.push_back(Pair("hashespersec", gethashespersec(params, false)));
+    obj.push_back(Pair("blocks",        (int)nBestHeight));
+    obj.push_back(Pair("currentblocksize",(uint64_t)nLastBlockSize));
+    obj.push_back(Pair("currentblocktx",(uint64_t)nLastBlockTx));
+    obj.push_back(Pair("difficulty",    (double)GetDifficulty()));
+    obj.push_back(Pair("errors",        GetWarnings("statusbar")));
     obj.push_back(Pair("networkhashps", getnetworkhashps(params, false)));
-    obj.push_back(Pair("pooledtx", (uint64_t)mempool.size()));
-    obj.push_back(Pair("testnet", fTestNet));
+    obj.push_back(Pair("pooledtx",      (uint64_t)mempool.size()));
+    obj.push_back(Pair("testnet",       fTestNet));
     return obj;
 }
 
@@ -169,7 +166,7 @@ Value getwork(const Array& params, bool fHelp)
         }
         CBlock* pblock = &pblocktemplate->block; // pointer for convenience
 
-                                                 // Update nTime
+        // Update nTime
         pblock->UpdateTime(pindexPrev);
         pblock->nNonce = 0;
 
@@ -190,25 +187,25 @@ Value getwork(const Array& params, bool fHelp)
 
         Object result;
         result.push_back(Pair("midstate", HexStr(BEGIN(pmidstate), END(pmidstate)))); // deprecated
-        result.push_back(Pair("data", HexStr(BEGIN(pdata), END(pdata))));
-        result.push_back(Pair("hash1", HexStr(BEGIN(phash1), END(phash1)))); // deprecated
-        result.push_back(Pair("target", HexStr(BEGIN(hashTarget), END(hashTarget))));
+        result.push_back(Pair("data",     HexStr(BEGIN(pdata), END(pdata))));
+        result.push_back(Pair("hash1",    HexStr(BEGIN(phash1), END(phash1)))); // deprecated
+        result.push_back(Pair("target",   HexStr(BEGIN(hashTarget), END(hashTarget))));
         return result;
     }
     else
     {
         // Parse parameters
         vector<unsigned char> vchData = ParseHex(params[0].get_str());
-        /*        for(int i = 0; i < 4; i++)
+/*        for(int i = 0; i < 4; i++)
         {
-        vchData.insert(vchData.begin(), 0);
+            vchData.insert(vchData.begin(), 0);
         }
-        */
+*/
         if (vchData.size() != 128)
             throw JSONRPCError(RPC_INVALID_PARAMETER, "Invalid parameter");
         CBlock* pdata = (CBlock*)&vchData[0];
         // Byte reverse
-        for (int i = 0; i < 128 / 4; i++)
+        for (int i = 0; i < 128/4; i++)
             ((unsigned int*)pdata)[i] = ByteReverse(((unsigned int*)pdata)[i]);
 
         // Get saved block
@@ -290,7 +287,7 @@ Value getblocktemplate(const Array& params, bool fHelp)
         nStart = GetTime();
 
         // Create new block
-        if (pblocktemplate)
+        if(pblocktemplate)
         {
             delete pblocktemplate;
             pblocktemplate = NULL;
@@ -305,7 +302,7 @@ Value getblocktemplate(const Array& params, bool fHelp)
     }
     CBlock* pblock = &pblocktemplate->block; // pointer for convenience
 
-                                             // Update nTime
+    // Update nTime
     pblock->UpdateTime(pindexPrev);
     pblock->nNonce = 0;
 
@@ -315,7 +312,7 @@ Value getblocktemplate(const Array& params, bool fHelp)
     unsigned int COUNT_SPEND_ZC_TX = 0;
     unsigned int MAX_SPEND_ZC_TX_PER_BLOCK = 1;
 
-    BOOST_FOREACH(CTransaction& tx, pblock->vtx)
+    BOOST_FOREACH (CTransaction& tx, pblock->vtx)
     {
         uint256 txHash = tx.GetHash();
         setTxIndex[txHash] = i++;
@@ -343,7 +340,7 @@ Value getblocktemplate(const Array& params, bool fHelp)
         entry.push_back(Pair("hash", txHash.GetHex()));
 
         Array deps;
-        BOOST_FOREACH(const CTxIn &in, tx.vin)
+        BOOST_FOREACH (const CTxIn &in, tx.vin)
         {
             if (setTxIndex.count(in.prevout.hash))
                 deps.push_back(setTxIndex[in.prevout.hash]);
@@ -377,14 +374,14 @@ Value getblocktemplate(const Array& params, bool fHelp)
     result.push_back(Pair("coinbaseaux", aux));
     result.push_back(Pair("coinbasevalue", (int64_t)pblock->vtx[0].vout[0].nValue));
     result.push_back(Pair("target", hashTarget.GetHex()));
-    result.push_back(Pair("mintime", (int64_t)pindexPrev->GetMedianTimePast() + 1));
+    result.push_back(Pair("mintime", (int64_t)pindexPrev->GetMedianTimePast()+1));
     result.push_back(Pair("mutable", aMutable));
     result.push_back(Pair("noncerange", "00000000ffffffff"));
     result.push_back(Pair("sigoplimit", (int64_t)MAX_BLOCK_SIGOPS));
     result.push_back(Pair("sizelimit", (int64_t)MAX_BLOCK_SIZE));
     result.push_back(Pair("curtime", (int64_t)pblock->nTime));
     result.push_back(Pair("bits", HexBits(pblock->nBits)));
-    result.push_back(Pair("height", (int64_t)(pindexPrev->nHeight + 1)));
+    result.push_back(Pair("height", (int64_t)(pindexPrev->nHeight+1)));
 
     return result;
 }
