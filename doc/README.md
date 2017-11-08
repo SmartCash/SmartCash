@@ -12,12 +12,8 @@ cryptographic software written by Eric Young ([eay@cryptsoft.com](mailto:eay@cry
 
 Intro
 ---------------------
-smartcash is is firstever cryptocurrency in the world that intrgrate Zerocoin extention ( http://zerocoin.org )
-to make transactions in Blockchain truly anonimity and merge mineable with Vertcoin
-and a free open source peer-to-peer electronic cash system that is
-completely decentralized, without the need for a central server or trusted
-parties.  Users hold the crypto keys to their own money and transact directly
-with each other, with the help of a P2P network to check for double-spending.
+smartcash is is first ever cryptocurrency in the world that integrate the Zerocoin extension (http://zerocoin.org)
+to make transactions in Blockchain truly anonymous, merge mineable with Vertcoin and a free open source peer-to-peer electronic cash system that is completely decentralized, without the need for a central server or trusted parties. Users hold the crypto keys to their own money and transact directly with each other, with the help of a P2P network to check for double-spending.
 
 
 Setup
