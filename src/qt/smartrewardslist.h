@@ -17,8 +17,8 @@
 
 #define SMARTREWARDS_DAY                                 25
 #define SMARTREWARDS_UTC_HOUR                            07
-//#define SMARTREWARDS_MINIMUM_AMOUNT            2000000000
-#define SMARTREWARDS_MINIMUM_AMOUNT            100000000000
+#define SMARTREWARDS_MINIMUM_AMOUNT            2000000000
+//#define SMARTREWARDS_MINIMUM_AMOUNT            100000000000
 
 namespace Ui {
     class SmartrewardsList;

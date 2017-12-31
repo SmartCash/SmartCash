@@ -79,6 +79,24 @@ SmartrewardsList::~SmartrewardsList()
     ui->tableWidget->setShowGrid(false);
  
     int nNewRow = 0;
+
+    //Smartrewards snapshot
+    QDateTime lastSmartrewardsSnapshotDateTimeUtc = QDateTime::currentDateTime();
+    int currentDay = QDateTime::currentDateTimeUtc().toString("dd").toInt();
+
+    //Set snapshot time
+    QString snapshotTime = QString("%1:00:00").arg(SMARTREWARDS_UTC_HOUR);
+    lastSmartrewardsSnapshotDateTimeUtc.setTime(QTime::fromString(snapshotTime, "hh:mm:ss"));
+
+    //Set snapshot date
+    if(currentDay < SMARTREWARDS_DAY){
+       lastSmartrewardsSnapshotDateTimeUtc = lastSmartrewardsSnapshotDateTimeUtc.addMonths(-1);
+       QString snapshotDate = QString("%1").arg(SMARTREWARDS_DAY);
+       lastSmartrewardsSnapshotDateTimeUtc.setDate(QDate::fromString(snapshotDate, "dd"));
+    }else{
+        QString snapshotDate = QString("%1").arg(SMARTREWARDS_DAY);
+        lastSmartrewardsSnapshotDateTimeUtc.setDate(QDate::fromString(snapshotDate, "dd"));
+    }
  
     BOOST_FOREACH(const PAIRTYPE(QString, std::vector<COutput>)& coins, mapCoins) {
         QString sWalletAddress = coins.first;
@@ -89,24 +107,7 @@ SmartrewardsList::~SmartrewardsList()
         ui->tableWidget->insertRow(nNewRow);
  
         CAmount nSum = 0;
-        QDateTime currentDateTime = QDateTime::currentDateTime();
         int nChildren = 0;
-        int currentDay = QDateTime::currentDateTimeUtc().toString("dd").toInt();
-        int currentMonth = QDateTime::currentDateTimeUtc().toString("MM").toInt();
-        int currentYear = QDateTime::currentDateTimeUtc().toString("yyyy").toInt();
-        int lastMonth = QDateTime::currentDateTimeUtc().addMonths(-1).toString("M").toInt();
-
-        //Smartrewards snapshot date
-        QDateTime lastSmartrewardsSnapshotDateTime = QDateTime::currentDateTime();
-        QString dateFormat = QString("%1-%2-%3").arg(currentYear).arg(currentMonth).arg(SMARTREWARDS_DAY);
-        QString timeFormat = QString("%1:00:00").arg(SMARTREWARDS_UTC_HOUR);
-        lastSmartrewardsSnapshotDateTime.setDate(QDate::fromString(dateFormat, "yyyy-MM-dd"));
-        lastSmartrewardsSnapshotDateTime.setTime(QTime::fromString(timeFormat, "hh:mm:ss"));
-        if(currentDay < SMARTREWARDS_DAY){
-           dateFormat = QString("%1-%2-%3").arg(currentYear).arg(lastMonth).arg(SMARTREWARDS_DAY);
-           lastSmartrewardsSnapshotDateTime.setDate(QDate::fromString(dateFormat, "yyyy-MM-dd"));
-        }
-
         BOOST_FOREACH(const COutput& out, coins.second) {
 
             nSum += out.tx->vout[out.i].nValue;
@@ -121,12 +122,14 @@ SmartrewardsList::~SmartrewardsList()
             }
 
             //tx date
-            QDateTime txDateTime = QDateTime::fromTime_t((qint32)out.tx->GetTxTime());
+            int64_t nTimeTx = out.tx->GetTxTime();
+            QDateTime txDateTime = QDateTime::fromTime_t((qint32)nTimeTx);
+            QDateTime txDateTimeUtc = txDateTime.toUTC();
 
-            if(txDateTime.toUTC() > lastSmartrewardsSnapshotDateTime){
-                //discard
+            if(txDateTimeUtc > lastSmartrewardsSnapshotDateTimeUtc){
+                int a = 1;
             }else{
-                //sum
+                int a = 2;
             }
 
             ui->tableWidget->setItem(nNewRow, 0, new QTableWidgetItem(sWalletLabel));
