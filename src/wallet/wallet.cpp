@@ -1970,8 +1970,8 @@ void CWallet::AvailableCoins(vector <COutput> &vCoins, bool fOnlyConfirmed, cons
                 } else if(nCoinType == ONLY_NONDENOMINATED) {
                     //if (CPrivateSend::IsCollateralAmount(pcoin->vout[i].nValue)) continue; // do not use collateral amounts
                     //found = !CPrivateSend::IsDenominatedAmount(pcoin->vout[i].nValue);
-                } else if(nCoinType == ONLY_1000) {
-                    found = pcoin->vout[i].nValue == 1000*COIN;
+                } else if(nCoinType == ONLY_10000) {
+                    found = pcoin->vout[i].nValue == 10000*COIN;
                 } else if(nCoinType == ONLY_PRIVATESEND_COLLATERAL) {
                     //found = CPrivateSend::IsCollateralAmount(pcoin->vout[i].nValue);
                 } else {
@@ -1982,7 +1982,7 @@ void CWallet::AvailableCoins(vector <COutput> &vCoins, bool fOnlyConfirmed, cons
                 isminetype mine = IsMine(pcoin->vout[i]);
                 LogPrintf("!(IsSpent(wtxid, i)) = %s\n", !(IsSpent(wtxid, i)));
                 LogPrintf("mine != ISMINE_NO = %s\n", mine != ISMINE_NO);
-                LogPrintf("(!IsLockedCoin((*it).first, i) || nCoinType == ONLY_1000) = %s\n", (!IsLockedCoin((*it).first, i) || nCoinType == ONLY_1000));
+                LogPrintf("(!IsLockedCoin((*it).first, i) || nCoinType == ONLY_10000) = %s\n", (!IsLockedCoin((*it).first, i) || nCoinType == ONLY_10000));
                 LogPrintf("(pcoin->vout[i].nValue > nMinimumInputValue) = %s\n", (pcoin->vout[i].nValue > nMinimumInputValue));
                 LogPrintf("!coinControl = %s\n", (
                         !coinControl ||
@@ -1995,7 +1995,7 @@ void CWallet::AvailableCoins(vector <COutput> &vCoins, bool fOnlyConfirmed, cons
 //                LogPrintf("coinControl->IsSelected(COutPoint((*it).first, i)) = %s\n", coinControl->IsSelected(COutPoint((*it).first, i)));
                 if (!(IsSpent(wtxid, i)) &&
                         mine != ISMINE_NO &&
-                        (!IsLockedCoin((*it).first, i) || nCoinType == ONLY_1000) &&
+                        (!IsLockedCoin((*it).first, i) || nCoinType == ONLY_10000) &&
                         (pcoin->vout[i].nValue > nMinimumInputValue) &&
                         (
                                 !coinControl ||
@@ -2035,7 +2035,7 @@ bool CWallet::SelectCoinsDark(CAmount nValueMin, CAmount nValueMax, std::vector<
         if(out.tx->vout[out.i].nValue < nValueMin/10) continue; 
         //do not allow collaterals to be selected 
         if(IsCollateralAmount(out.tx->vout[out.i].nValue)) continue; 
-        if(fSmartNode && out.tx->vout[out.i].nValue == 1000*COIN) continue; //smartnode input 
+        if(fSmartNode && out.tx->vout[out.i].nValue == 10000*COIN) continue; //smartnode input 
  
         if(nValueRet + out.tx->vout[out.i].nValue <= nValueMax){ 
             CTxIn txin = CTxIn(out.tx->GetHash(),out.i); 
@@ -2062,7 +2062,7 @@ bool CWallet::GetSmartnodeVinAndKeys(CTxIn& txinRet, CPubKey& pubKeyRet, CKey& k
  
     // Find possible candidates 
     std::vector<COutput> vPossibleCoins; 
-    AvailableCoins(vPossibleCoins, true, NULL, false, ONLY_1000); 
+    AvailableCoins(vPossibleCoins, true, NULL, false, ONLY_10000); 
     if(vPossibleCoins.empty()) { 
         LogPrintf("CWallet::GetSmartnodeVinAndKeys -- Could not locate any valid smartnode vin\n"); 
         return false; 
@@ -2504,7 +2504,7 @@ bool CWallet::SelectCoinsByDenominations(int nDenom, CAmount nValueMin, CAmount 
     BOOST_FOREACH(const COutput& out, vCoins) 
     { 
         // smartnode-like input should not be selected by AvailableCoins now anyway 
-        //if(out.tx->vout[out.i].nValue == 1000*COIN) continue; 
+        //if(out.tx->vout[out.i].nValue == 10000*COIN) continue; 
         if(nValueRet + out.tx->vout[out.i].nValue <= nValueMax){ 
  
             CTxIn txin = CTxIn(out.tx->GetHash(), out.i); 
@@ -2615,7 +2615,7 @@ bool CWallet::SelectCoinsGrouppedByAddresses(std::vector<CompactTallyItem>& vecT
             if(fAnonymizable) { 
                 // ignore collaterals 
                 if(IsCollateralAmount(wtx.vout[i].nValue)) continue; 
-                if(fSmartNode && wtx.vout[i].nValue == 1000*COIN) continue; 
+                if(fSmartNode && wtx.vout[i].nValue == 10000*COIN) continue; 
                 // ignore outputs that are 10 times smaller then the smallest denomination 
                 // otherwise they will just lead to higher fee / lower priority 
                 if(wtx.vout[i].nValue <= vecPrivateSendDenominations.back()/10) continue; 
@@ -2665,7 +2665,6 @@ bool CWallet::CreateTransaction(const vector<CRecipient>& vecSend, CWalletTx& wt
                                 std::string& strFailReason, const CCoinControl* coinControl, bool sign, AvailableCoinsType nCoinType, bool fUseInstantSend)
 {
     LogPrintf("CreateTransaction()\n");
-    CAmount nFeePay = fUseInstantSend ? CTxLockRequest().GetMinFee() : 0;
     CAmount nValue = 0;
     int nChangePosRequest = nChangePosInOut;
     unsigned int nSubtractFeeFromAmount = 0;
@@ -2946,20 +2945,14 @@ bool CWallet::CreateTransaction(const vector<CRecipient>& vecSend, CWalletTx& wt
 //                    if (dPriorityNeeded > 0 && dPriority >= dPriorityNeeded)
 //                        break;
                 }
-                CAmount nFeeNeeded = max(nFeePay, GetMinimumFee(nBytes, nTxConfirmTarget, mempool));
-                if (coinControl && nFeeNeeded > 0 && coinControl->nMinimumTotalFee > nFeeNeeded) {
-                    nFeeNeeded = coinControl->nMinimumTotalFee;
-                }
-                if(fUseInstantSend) {
-                    nFeeNeeded = std::max(nFeeNeeded, CTxLockRequest(txNew).GetMinFee());
-                }
+                int64_t nPayFee = payTxFee.GetFeePerK() * (1 + (int64_t) GetTransactionWeight(txNew) / 1000);
+                bool fAllowFree = AllowFree(dPriority);// No free TXs in SMART
+                LogPrintf("CreateTransaction: fAllowFree=%s\n", fAllowFree);
+                int64_t nMinFee = wtxNew.GetMinFee(1, fAllowFree, GMF_SEND);
 
-                // If we made it here and we aren't even able to meet the relay fee on the next pass, give up
-                // because we must be at the maximum allowed fee.
-                if (nFeeNeeded < ::minRelayTxFee.GetFee(nBytes))
-                {
-                    strFailReason = _("Transaction too large for fee policy");
-                    return false;
+                int64_t nFeeNeeded = nPayFee;
+                if (nFeeNeeded < nMinFee) {
+                    nFeeNeeded = nMinFee;
                 }
 
                 if (nFeeRet >= nFeeNeeded)
@@ -2971,6 +2964,10 @@ bool CWallet::CreateTransaction(const vector<CRecipient>& vecSend, CWalletTx& wt
             }
         }
     }
+
+    if(fUseInstantSend){
+      nFeeRet += CTxLockRequest().GetMinFee();
+    }        
 
     if (GetBoolArg("-walletrejectlongchains", DEFAULT_WALLET_REJECT_LONG_CHAINS)) {
         // Lastly, ensure this tx will pass the mempool's chain limits

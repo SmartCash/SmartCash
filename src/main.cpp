@@ -1459,7 +1459,7 @@ bool CheckTransaction(const CTransaction& tx, CValidationState& state, uint256 h
                                          "CTransaction::CheckTransaction() : One of the SmartHive Rewards is missing");
                   }
 
-                  if ((nHeight >= HF_SMARTNODE_HEIGHT + 1000) && (!found_smartnode_payment || total_payment_tx > 1)) {
+                  if ((nHeight >= HF_SMARTNODE_HEIGHT + 5000) && (!found_smartnode_payment || total_payment_tx > 1)) {
                     return state.DoS(100, false, REJECT_INVALID_SMARTNODE_PAYMENT,
                                  "CTransaction::CheckTransaction() : SmartNode payment is invalid");
                   }
@@ -7798,6 +7798,7 @@ bool SendMessages(CNode* pto)
         // Message: inventory
         //
         vector<CInv> vInv;
+	vector<CInv> vInvWait;
         {
             LOCK(pto->cs_inventory);
             vInv.reserve(std::max<size_t>(pto->vInventoryBlockToSend.size(), INVENTORY_BROADCAST_MAX));
@@ -7925,6 +7926,27 @@ bool SendMessages(CNode* pto)
                 }
             }
         }
+	// vInventoryToSend from dash
+        {
+            LOCK(pto->cs_inventory);
+            vInv.reserve(std::min<size_t>(1000, pto->vInventoryToSend.size()));
+            vInvWait.reserve(pto->vInventoryToSend.size());
+            BOOST_FOREACH(const CInv& inv, pto->vInventoryToSend)
+            {
+                pto->filterInventoryKnown.insert(inv.hash);
+
+                LogPrintf("SendMessages -- queued inv: %s  index=%d peer=%d\n", inv.ToString(), vInv.size(), pto->id);
+                vInv.push_back(inv);
+                if (vInv.size() >= 1000)
+                {
+                    LogPrintf("SendMessages -- pushing inv's: count=%d peer=%d\n", vInv.size(), pto->id);
+                    pto->PushMessage(NetMsgType::INV, vInv);
+                    vInv.clear();
+                }
+            }
+            pto->vInventoryToSend = vInvWait;
+        }
+	    
         if (!vInv.empty())
             pto->PushMessage(NetMsgType::INV, vInv);
 
