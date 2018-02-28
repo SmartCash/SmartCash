@@ -511,7 +511,7 @@ CBlockTemplate* BlockAssembler::CreateNewBlock(const CScript& scriptPubKeyIn)
         pblock->nNonce         = 0;
         pblock->vtx[0].vin[0].scriptSig = CScript() << OP_0 << OP_0;
         pblocktemplate->vTxSigOpsCost[0] = GetLegacySigOpCount(pblock->vtx[0]);
-        pblock->vtx[0].vout[0].nValue += nFees + (GetBlockSubsidy(nHeight, chainparams.GetConsensus()) * (0.95 + 0.05 * blockTimeDeviation / 100));
+        pblock->vtx[0].vout[0].nValue += nFees + (GetBlockSubsidy(nHeight, chainparams.GetConsensus()) * (blockTimeDeviation / 100));
         pblocktemplate->vTxFees[0] = -nFees;
 
         CValidationState state;
