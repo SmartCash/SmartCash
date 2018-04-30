@@ -119,3 +119,8 @@ share/BitcoindComparisonTool.jar
 
 libsmartcashconsensus.pc
 contrib/devtools/split-debug.sh
+*.config
+*.creator
+*.files
+*.includes
+*.user
